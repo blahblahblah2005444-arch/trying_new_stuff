@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Couple Dare Game</title>
+  <style>
+    body {
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      text-align: center;
+      background: linear-gradient(135deg, #ffdde1, #ee9ca7);
+      margin: 0;
+      padding: 0;
+    }
+    h1 {
+      margin-top: 20px;
+      color: #d6336c;
+      text-shadow: 2px 2px #fff;
+    }
+    .board {
+      display: grid;
+      grid-template-columns: repeat(10, 70px);
+      gap: 8px;
+      justify-content: center;
+      margin: 20px auto;
+    }
+    .cell {
+      width: 70px;
+      height: 70px;
+      background: #fff;
+      border: 2px solid #ff85a2;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 14px;
+      border-radius: 10px;
+      position: relative;
+      color: #d6336c;
+      font-weight: bold;
+      box-shadow: 0 0 6px rgba(255, 133, 162, 0.5);
+    }
+    .player {
+      width: 24px;
+      height: 24px;
+      background: red;
+      border-radius: 50%;
+      position: absolute;
+      bottom: 4px;
+      right: 4px;
+      border: 2px solid white;
+      box-shadow: 0 0 4px rgba(0,0,0,0.4);
+    }
+    button {
+      padding: 12px 25px;
+      font-size: 18px;
+      margin-top: 20px;
+      cursor: pointer;
+      border-radius: 10px;
+      border: none;
+      background: #ff4d6d;
+      color: white;
+      font-weight: bold;
+      transition: transform 0.2s, background 0.3s;
+    }
+    button:hover {
+      transform: scale(1.05);
+      background: #d6336c;
+    }
+    #diceResult {
+      margin-top: 15px;
+      font-size: 20px;
+      color: #fff;
+      font-weight: bold;
+    }
+    #showDareBtn {
+      margin-top: 20px;
+      display: none;
+      background: #ff85a2;
+    }
+    #dareBox {
+      margin-top: 20px;
+      font-size: 20px;
+      font-weight: bold;
+      color: #fff;
+      background: rgba(255, 77, 109, 0.85);
+      padding: 15px;
+      border-radius: 12px;
+      display: inline-block;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+      display: none;
+    }
+    /* Dice animation */
+    .dice-rolling {
+      animation: shake 0.6s;
+    }
+    @keyframes shake {
+      0% { transform: rotate(0deg); }
+      25% { transform: rotate(20deg); }
+      50% { transform: rotate(-20deg); }
+      75% { transform: rotate(20deg); }
+      100% { transform: rotate(0deg); }
+    }
+  </style>
+</head>
+<body>
+  <h1>🎲 Couple Dare Game 💕</h1>
+  <div class="board" id="board"></div>
+  <button id="diceBtn" onclick="rollDice()">Roll Dice</button>
+  <div id="diceResult"></div>
+  <button id="showDareBtn" onclick="showDare()">💌 Show Dare</button>
+  <div id="dareBox"></div>
+
+  <script>
+    const board = document.getElementById("board");
+    const dareBox = document.getElementById("dareBox");
+    const diceResult = document.getElementById("diceResult");
+    const showDareBtn = document.getElementById("showDareBtn");
+    const totalCells = 100;
+
+     const dares = [
+      "1. Give a kiss 💋",
+  "2. Whisper a secret 🤫",
+  "3. Hold hands for 1 minute 🤝",
+  "4. Say something romantic 💖",
+  "5. Hug tightly 🤗",
+  "6. Do a silly dance 💃",
+  "7. Compliment your partner ✨",
+  "8. Share a funny memory 😂",
+  "9. Look into each other’s eyes for 30 sec 👀",
+  "10. Sing a song 🎶",
+  "11. Take a cute selfie together 📸",
+  "12. Say 'I love you' in 3 creative ways 💕",
+  "13. Feed your partner something 🍫",
+  "14. Do 5 push-ups while your partner cheers 🏋️",
+  "15. Let your partner style your hair 🎀",
+  "16. Give a 30-second shoulder massage 💆",
+  "17. Write 'I ❤️ U' on your partner’s hand ✍️",
+  "18. Share your favorite memory of them 🌙",
+  "19. Pretend to propose 💍",
+  "20. Whisper their name 5 times softly 🌹",
+  "21. Imitate your partner for 30 seconds 😂",
+  "22. Share something you’ve never told them 🤐",
+  "23. Let them tickle you for 15 seconds 😅",
+  "24. Trade phones for 2 minutes 📱",
+  "25. Give a forehead kiss 🌸",
+  "26. Try to make them laugh in 10 seconds 😜",
+  "27. Share your dream vacation spot 🏝️",
+  "28. Hold them like you’ll never let go 🫂",
+  "29. Say one thing you admire most ✨",
+  "30. Make a silly face for a photo 🤪",
+  "31. Share your favorite song with them 🎧",
+  "32. Pretend to be in a movie scene 🎬",
+  "33. Give them a back hug 🐻",
+  "34. Share your first impression of them 🥰",
+  "35. Dance together for 30 seconds 🕺💃",
+  "36. Let your partner draw on your hand ✍️",
+  "37. Make them a funny nickname 😂",
+  "38. Whisper something flirty 😏",
+  "39. Hold pinkies for 2 minutes 🤞",
+  "40. Share a secret crush from the past 😳",
+  "41. Close your eyes, let them surprise you 🎁",
+  "42. Say 3 things you’re grateful for 🌟",
+  "43. Pretend you’re on your first date again 🌹",
+  "44. Compliment their smile 😍",
+  "45. Give them a piggyback ride 🐷",
+  "46. Take a slow dance, no music 💞",
+  "47. Let them choose a dare for you 🎯",
+  "48. Say 'I’ll never leave you' 🌙",
+  "49. Plan your next date idea 🗓️",
+  "50. Final Big Dare: Kiss like it’s the last time ❤️🔥",
+  "51. Share one thing you can’t live without 💭",
+  "52. Trace a heart on your partner’s back ❤️",
+  "53. Let your partner take a funny photo of you 🤳",
+  "54. Share your dream wedding idea 💒",
+  "55. Hug them from behind for 20 seconds 🫂",
+  "56. Tell them why they make you happy 🌞",
+  "57. Pretend to be a famous couple for 1 min 🎭",
+  "58. Share your favorite thing they’ve ever done 💎",
+  "59. Give them a playful nickname 🐻",
+  "60. Whisper something you wish for 🌠",
+  "61. Kiss their hand like royalty 🤴👸",
+  "62. Share your favorite childhood story 📖",
+  "63. Pretend to be shy for 30 seconds 🙈",
+  "64. Say 5 things you love about them 💕",
+  "65. Trade seats and mimic each other 😂",
+  "66. Hold their face gently and smile 😊",
+  "67. Pretend you just met and flirt 🌹",
+  "68. Share the cutest thing they ever did 🥺",
+  "69. Blow them a slow, dramatic kiss 😘",
+  "70. Rest your head on their shoulder 🌙",
+  "71. Let them tell you what to do for 1 min 🕐",
+  "72. Share a promise for the future 🤝",
+  "73. Pretend you’re writing them a love letter ✍️",
+  "74. Give them a surprise cheek kiss 💋",
+  "75. Share your partner’s best quality 🌟",
+  "76. Do a romantic movie reenactment 🎥",
+  "77. Laugh loudly together for no reason 😂",
+  "78. Tell them your favorite time spent together 🕰️",
+  "79. Brush their hair with your fingers 🌾",
+  "80. Sing the chorus of a love song 🎶",
+  "81. Say their name in 3 different tones 🎤",
+  "82. Give them a 15-second bear hug 🐻",
+  "83. Pretend they’re famous & interview them 🎤",
+  "84. Look into their eyes without laughing 🤐",
+  "85. Share a fantasy date idea ✨",
+  "86. Kiss their forehead softly 🌸",
+  "87. Act like they’re your celebrity crush 🤩",
+  "88. Hold both their hands and don’t let go 🤲",
+  "89. Whisper 'you’re mine' 🔥",
+  "90. Share your happiest memory with them 🌈",
+  "91. Pretend they’re your teacher & misbehave 🤓",
+  "92. Draw a heart on their palm ❤️",
+  "93. Say 'I love you' in a funny accent 😂",
+  "94. Share a silly wish 🪄",
+  "95. Hug them with your eyes closed 🌙",
+  "96. Tell them what first attracted you 😍",
+  "97. Pretend you’re giving a wedding toast 🥂",
+  "98. Kiss them in slow motion 🎥💋",
+  "99. Plan a surprise for the future 🎁",
+  "100. Final Dare: Kiss and hold for 1 full minute ❤️🔥"
+    ];
+
+    // Create board
+    for (let i = 1; i <= totalCells; i++) {
+      const cell = document.createElement("div");
+      cell.classList.add("cell");
+      cell.innerText = i;
+      board.appendChild(cell);
+    }
+
+    // Player
+    let position = 0;
+    const player = document.createElement("div");
+    player.classList.add("player");
+    board.children[position].appendChild(player);
+
+    function rollDice() {
+      const diceBtn = document.getElementById("diceBtn");
+      diceBtn.classList.add("dice-rolling");
+
+      setTimeout(() => {
+        diceBtn.classList.remove("dice-rolling");
+
+        const roll = Math.floor(Math.random() * 6) + 1;
+        diceResult.innerText = `🎲 You rolled: ${roll}`;
+
+        position += roll;
+        if (position >= totalCells) {
+          position = totalCells - 1;
+          alert("🎉 Game Over! You reached the end!");
+        }
+
+        // Move player
+        document.querySelector(".player")?.remove();
+        board.children[position].appendChild(player);
+
+        // Hide dare, show button
+        dareBox.style.display = "none";
+        showDareBtn.style.display = "inline-block";
+        showDareBtn.setAttribute("data-dare", dares[position]);
+      }, 600); // match animation duration
+    }
+
+    function showDare() {
+      dareBox.innerText = `👉 Dare: ${showDareBtn.getAttribute("data-dare")}`;
+      dareBox.style.display = "block";
+      showDareBtn.style.display = "none";
+    }
+  </script>
+</body>
+</html>
